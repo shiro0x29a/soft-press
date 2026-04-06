@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//home/anik/code/templates/keystatic/templates/nextjs/**)",
+      "Read(//home/anik/code/templates/keystatic/packages/**)"
+    ]
+  },
+  "$version": 3
+}

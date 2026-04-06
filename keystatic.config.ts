@@ -1,11 +1,13 @@
-import { collection, config, fields } from "@keystatic/core";
+import { config, collection, fields } from "@keystatic/core";
+
+export const markdocConfig = fields.markdoc.createMarkdocConfig({});
 
 export default config({
   storage: {
     kind: "local",
   },
   collections: {
-    posts: {
+    posts: collection({
       label: "Posts",
       slugField: "title",
       path: "content/posts/*",
@@ -14,31 +16,10 @@ export default config({
       },
       schema: {
         title: fields.slug({
-          name: {
-            label: "Title",
-            validation: {
-              length: { min: 1 },
-            },
-          },
-          slug: {
-            label: "Slug",
-            validate: (value) => {
-              if (!value) return { isValid: false, message: "Slug is required" };
-              if (value.length > 100)
-                return { isValid: false, message: "Slug must be 100 characters or less" };
-              return { isValid: true };
-            },
-          },
+          name: { label: "Title" },
         }),
         content: fields.markdoc({
           label: "Content",
-          options: {
-            heading: [2, 3, 4, 5, 6],
-            dividers: true,
-            image: {
-              directory: "content/posts/images",
-            },
-          },
         }),
         excerpt: fields.text({
           label: "Excerpt",
@@ -79,6 +60,6 @@ export default config({
           defaultValue: "draft",
         }),
       },
-    },
+    }),
   },
 });

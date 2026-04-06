@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//home/anik/code/templates/keystatic/templates/nextjs/**)"
+    ]
+  }
+}
