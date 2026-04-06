@@ -10,7 +10,7 @@ interface ClientLayoutProps {
 const ClientLayout = ({ children }: ClientLayoutProps) => {
   const pathname = usePathname();
 
-  const protectedRoutes = ["/dashboard"];
+  const protectedRoutes = ["/dashboard", "/keystatic"];
   const isProtectedRoute = protectedRoutes.some((route) => pathname?.startsWith(route));
 
   const showHeader = !isProtectedRoute;
