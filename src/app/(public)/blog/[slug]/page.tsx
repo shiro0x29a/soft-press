@@ -5,14 +5,13 @@ import path from "path";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-function parsePostFile(filePath: string) {
+function parsePostFile(filePath: string, slug: string) {
   try {
     const content = fs.readFileSync(filePath, "utf-8");
     const fmMatch = content.match(/^---\n([\s\S]*?)\n---\n([\s\S]*)$/);
     if (!fmMatch) return null;
 
     const body = fmMatch[2];
-    const slug = path.basename(filePath).replace(/\.(mdoc|md)$/, "");
 
     const data: Record<string, string | string[]> = {};
     const lines = fmMatch[1].split("\n");
@@ -57,9 +56,9 @@ function parsePostFile(filePath: string) {
 
 function getPost(slug: string) {
   const contentDir = path.join(process.cwd(), "content", "posts");
-  const filePath = path.join(contentDir, `${slug}.mdoc`);
+  const filePath = path.join(contentDir, slug, "index.mdoc");
   if (!fs.existsSync(filePath)) return null;
-  return parsePostFile(filePath);
+  return parsePostFile(filePath, slug);
 }
 
 export function generateStaticParams() {
@@ -68,8 +67,14 @@ export function generateStaticParams() {
 
   return fs
     .readdirSync(contentDir)
-    .filter((f) => /\.(mdoc|md)$/.test(f) && f !== "index.md" && f !== "index.mdoc")
-    .map((f) => ({ slug: f.replace(/\.(mdoc|md)$/, "") }));
+    .filter((entry) => {
+      const entryPath = path.join(contentDir, entry);
+      return (
+        fs.statSync(entryPath).isDirectory() &&
+        fs.existsSync(path.join(entryPath, "index.mdoc"))
+      );
+    })
+    .map((entry) => ({ slug: entry }));
 }
 
 export default async function BlogPostPage({ params }: { params: Promise<{ slug: string }> }) {
@@ -154,6 +159,20 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
                     {line.replace("- ", "")}
                   </li>
                 );
+              }
+              if (line.startsWith("![")) {
+                const imgMatch = line.match(/!\[([^\]]*)\]\(([^)]+)\)/);
+                if (imgMatch) {
+                  return (
+                    <p key={i} style={{ margin: "0 21px 12px", textAlign: "center" }}>
+                      <img
+                        src={imgMatch[2]}
+                        alt={imgMatch[1]}
+                        className="mx-auto max-w-full rounded-lg"
+                      />
+                    </p>
+                  );
+                }
               }
               return (
                 <p

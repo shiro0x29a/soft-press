@@ -14,15 +14,12 @@ interface Post {
   status?: string;
 }
 
-function parsePostFile(filePath: string): Post | null {
+function parsePostFile(filePath: string, dirName: string): Post | null {
   try {
     const content = fs.readFileSync(filePath, "utf-8");
     const fmMatch = content.match(/^---\n([\s\S]*?)\n---\n([\s\S]*)$/);
     if (!fmMatch) return null;
 
-    const slug = path.basename(filePath).replace(/\.(mdoc|md)$/, "");
-
-    // Parse YAML-like frontmatter (simplified)
     const data: Record<string, string | string[]> = {};
     const lines = fmMatch[1].split("\n");
     let currentKey = "";
@@ -31,7 +28,6 @@ function parsePostFile(filePath: string): Post | null {
     for (const line of lines) {
       const kvMatch = line.match(/^(\w+):\s*(.*)/);
       if (kvMatch) {
-        // Save previous array
         if (currentKey && currentArr.length > 0) {
           data[currentKey] = currentArr;
           currentArr = [];
@@ -46,14 +42,13 @@ function parsePostFile(filePath: string): Post | null {
         }
       }
     }
-    // Save last array
     if (currentKey && currentArr.length > 0) {
       data[currentKey] = currentArr;
     }
 
     return {
-      title: (data.title as string) || slug,
-      slug,
+      title: (data.title as string) || dirName,
+      slug: dirName,
       excerpt: data.excerpt as string | undefined,
       tags: data.tags as string[] | undefined,
       author: data.author as string | undefined,
@@ -73,13 +68,13 @@ function getPosts(): Post[] {
   const entries = fs.readdirSync(contentDir);
 
   for (const entry of entries) {
-    if (!/\.(mdoc|md)$/.test(entry)) continue;
-    if (entry === "index.md" || entry === "index.mdoc") continue;
-
     const entryPath = path.join(contentDir, entry);
-    if (!fs.statSync(entryPath).isFile()) continue;
+    if (!fs.statSync(entryPath).isDirectory()) continue;
 
-    const post = parsePostFile(entryPath);
+    const mdFile = path.join(entryPath, "index.mdoc");
+    if (!fs.existsSync(mdFile)) continue;
+
+    const post = parsePostFile(mdFile, entry);
     if (post && post.status === "published") {
       posts.push(post);
     }
