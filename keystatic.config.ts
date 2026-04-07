@@ -10,10 +10,9 @@ export default config({
     posts: collection({
       label: "Posts",
       slugField: "title",
-      path: "content/posts/*/index",
+      path: "content/posts/*/",
       format: {
         contentField: "content",
-        contentExtension: "mdoc",
       },
       schema: {
         title: fields.slug({
@@ -21,6 +20,12 @@ export default config({
         }),
         content: fields.markdoc({
           label: "Content",
+          options: {
+            image: {
+              directory: (ctx) =>
+                `content/posts/${ctx.collection ?? ctx.slug}/images`,
+            },
+          },
         }),
         excerpt: fields.text({
           label: "Excerpt",

@@ -1,5 +1,4 @@
 import { HeadManager } from "@/shared/components/common/head-manager";
-import { Card, CardHeader, CardTitle } from "@/shared/ui/card";
 import fs from "fs";
 import path from "path";
 import Link from "next/link";
@@ -94,8 +93,8 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
         </Link>
 
         <article>
-          <header className="mb-8">
-            <h1 style={{ margin: "21px 21px 12px" }} className="text-[32px] font-bold leading-[34px]">
+          <header style={{ margin: "21px 21px 12px" }}>
+            <h1 className="text-[32px] font-bold leading-[34px]">
               {post.title}
             </h1>
             <div
@@ -108,28 +107,23 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
                 fontStyle: "normal",
               }}
             >
-              {post.author && (
-                <span>{post.author}</span>
-              )}
+              {post.author && <span>{post.author}</span>}
               {post.publishedAt && (
-                <time
-                  dateTime={post.publishedAt}
-                  style={{
-                    color: "#79828B",
-                  }}
-                  className="before:content-['·'] before:px-[7px] before:text-lg before:leading-none"
-                >
-                  {new Date(post.publishedAt).toLocaleDateString("en-US", {
-                    year: "numeric",
-                    month: "long",
-                    day: "numeric",
-                  })}
-                </time>
+                <>
+                  <span className="px-[7px] text-lg leading-none">·</span>
+                  <time dateTime={post.publishedAt}>
+                    {new Date(post.publishedAt).toLocaleDateString("en-US", {
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                    })}
+                  </time>
+                </>
               )}
             </div>
           </header>
 
-          <div className="prose prose-neutral dark:prose-invert max-w-none">
+          <div style={{ padding: "0 21px" }}>
             {post.body.split("\n").map((line, i) => {
               if (line.startsWith("# ")) {
                 return (

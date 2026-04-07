@@ -115,17 +115,22 @@ export default function BlogPage() {
                       {post.title}
                     </Link>
                   </CardTitle>
-                  <div className="text-muted-foreground flex items-center gap-4 text-sm">
-                    {post.publishedAt && (
-                      <span>
-                        {new Date(post.publishedAt).toLocaleDateString("en-US", {
-                          year: "numeric",
-                          month: "long",
-                          day: "numeric",
-                        })}
-                      </span>
+                  <div className="text-muted-foreground flex items-center text-[15px] leading-[18px]" style={{ color: "#79828B", fontStyle: "normal" }}>
+                    {post.author && (
+                      <span>{post.author}</span>
                     )}
-                    {post.author && <span>by {post.author}</span>}
+                    {post.publishedAt && (
+                      <>
+                        <span className="px-[7px] text-lg leading-none">·</span>
+                        <time dateTime={post.publishedAt}>
+                          {new Date(post.publishedAt).toLocaleDateString("en-US", {
+                            year: "numeric",
+                            month: "long",
+                            day: "numeric",
+                          })}
+                        </time>
+                      </>
+                    )}
                   </div>
                 </CardHeader>
                 {post.excerpt && <CardContent>{post.excerpt}</CardContent>}
