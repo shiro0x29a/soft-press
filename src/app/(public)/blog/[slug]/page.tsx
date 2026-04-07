@@ -94,7 +94,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
               {post.title}
             </h1>
             <div
-              className="flex items-center gap-3"
+              className="flex items-center"
               style={{
                 margin: "12px 21px",
                 fontSize: "15px",
@@ -104,13 +104,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
               }}
             >
               {post.author && (
-                <a
-                  href={`/blog/author/${post.author}`}
-                  rel="author"
-                  className="text-primary hover:underline"
-                >
-                  {post.author}
-                </a>
+                <span>{post.author}</span>
               )}
               {post.publishedAt && (
                 <time
@@ -162,7 +156,10 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
                 );
               }
               return (
-                <p key={i} className="mb-3">
+                <p
+                  key={i}
+                  style={{ margin: "0 21px 12px", wordWrap: "break-word" }}
+                >
                   {line}
                 </p>
               );
