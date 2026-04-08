@@ -102,7 +102,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
           ← Back to Blog
         </Link>
 
-        <article>
+        <article style={{ maxWidth: "732px", width: "100%", flexGrow: 1, margin: "0 auto", position: "relative", padding: "21px 0" }}>
           <header className="mb-8">
             <h1 style={{ margin: "21px 21px 12px" }} className="text-[32px] font-bold leading-[34px]">
               {post.title}
@@ -136,35 +136,135 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
             </div>
           </header>
 
-          <div className="prose prose-neutral dark:prose-invert max-w-none" style={{ padding: "0 21px" }}>
-            {post.body.split("\n").map((line, i) => {
+          {post.body.split("\n").map((line, i) => {
               if (line.startsWith("# ")) {
                 return (
-                  <h1 key={i} className="text-3xl font-bold mt-8 mb-4">
+                  <h1
+                    key={i}
+                    style={{
+                      fontSize: "32px",
+                      fontWeight: 700,
+                      lineHeight: 1.3,
+                      color: "#000",
+                      margin: "1.5em 0 0.5em",
+                    }}
+                  >
                     {line.replace("# ", "")}
                   </h1>
                 );
               }
               if (line.startsWith("## ")) {
                 return (
-                  <h2 key={i} className="text-2xl font-bold mt-6 mb-3">
+                  <h2
+                    key={i}
+                    style={{
+                      fontSize: "28px",
+                      fontWeight: 700,
+                      lineHeight: 1.3,
+                      color: "#000",
+                      margin: "1.5em 0 0.5em",
+                    }}
+                  >
                     {line.replace("## ", "")}
                   </h2>
                 );
               }
               if (line.startsWith("### ")) {
                 return (
-                  <h3 key={i} className="text-xl font-bold mt-5 mb-2">
+                  <h3
+                    key={i}
+                    style={{
+                      fontSize: "24px",
+                      fontWeight: 700,
+                      lineHeight: 1.3,
+                      color: "#000",
+                      margin: "1.5em 0 0.5em",
+                    }}
+                  >
                     {line.replace("### ", "")}
                   </h3>
+                );
+              }
+              if (line.startsWith("#### ")) {
+                return (
+                  <h4
+                    key={i}
+                    style={{
+                      fontSize: "22px",
+                      fontWeight: 700,
+                      lineHeight: 1.3,
+                      color: "#000",
+                      margin: "1.5em 0 0.5em",
+                    }}
+                  >
+                    {line.replace("#### ", "")}
+                  </h4>
+                );
+              }
+              if (line.startsWith("##### ")) {
+                return (
+                  <h5
+                    key={i}
+                    style={{
+                      fontSize: "20px",
+                      fontWeight: 700,
+                      lineHeight: 1.3,
+                      color: "#000",
+                      margin: "1.5em 0 0.5em",
+                    }}
+                  >
+                    {line.replace("##### ", "")}
+                  </h5>
+                );
+              }
+              if (line.startsWith("###### ")) {
+                return (
+                  <h6
+                    key={i}
+                    style={{
+                      fontSize: "18px",
+                      fontWeight: 700,
+                      lineHeight: 1.3,
+                      color: "#000",
+                      margin: "1.5em 0 0.5em",
+                    }}
+                  >
+                    {line.replace("###### ", "")}
+                  </h6>
                 );
               }
               if (line.trim() === "") return <br key={i} />;
               if (line.startsWith("- ")) {
                 return (
-                  <li key={i} className="ml-4 list-disc">
+                  <li
+                    key={i}
+                    style={{
+                      marginLeft: "2em",
+                      lineHeight: 1.6,
+                      marginBottom: "0.25em",
+                      fontSize: "18px",
+                    }}
+                  >
                     {line.replace("- ", "")}
                   </li>
+                );
+              }
+              if (line.startsWith("> ")) {
+                return (
+                  <blockquote
+                    key={i}
+                    style={{
+                      borderLeft: "4px solid #e0e0e0",
+                      margin: "1.5em 0",
+                      padding: "0.5em 1em",
+                      color: "#555",
+                      fontStyle: "italic",
+                      fontSize: "18px",
+                      lineHeight: 1.6,
+                    }}
+                  >
+                    {line.replace("> ", "")}
+                  </blockquote>
                 );
               }
 
@@ -173,7 +273,6 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
               const elements: React.ReactNode[] = [];
               let lastIndex = 0;
               let match;
-              let tempText = "";
 
               while ((match = imgRegex.exec(line)) !== null) {
                 // Text before image
@@ -196,8 +295,13 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
                     key={`img-${i}-${match.index}`}
                     src={resolveImagePath(match[2])}
                     alt={match[1]}
-                    className="mx-auto max-w-full rounded-lg"
-                    style={{ display: "block", margin: "12px 0" }}
+                    style={{
+                      maxWidth: "690px",
+                      width: "100%",
+                      height: "auto",
+                      display: "block",
+                      margin: "0 21px 12px",
+                    }}
                   />
                 );
                 lastIndex = match.index + match[0].length;
@@ -232,7 +336,6 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
 
               return elements.length > 0 ? <>{elements}</> : null;
             })}
-          </div>
         </article>
       </div>
     </>
