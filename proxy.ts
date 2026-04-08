@@ -6,6 +6,6 @@ export default function middleware() {
 
 export const config = {
   matcher: [
-    "/((?!api|_next/static|_next/image|favicon\\.ico|(?:\\.svg|\\.png)|apple-icon\\.png).*)",
+    "/((?!api|_next/static|_next/image|favicon\\.ico|(?:\\.svg|\\.png)|apple-icon\\.png|content/).*)",
   ],
 };

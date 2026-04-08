@@ -84,6 +84,16 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
     notFound();
   }
 
+  // Helper function to resolve image paths
+  const resolveImagePath = (src: string): string => {
+    // If already absolute path or external URL, return as-is
+    if (src.startsWith("http://") || src.startsWith("https://") || src.startsWith("/")) {
+      return src;
+    }
+    // Otherwise, prepend the content path for this slug
+    return `/content/posts/${slug}/content/${src}`;
+  };
+
   return (
     <>
       <HeadManager title={post.title} description={post.excerpt || post.title} />
@@ -174,7 +184,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
                 parts.push(
                   <img
                     key={`img-${i}-${match.index}`}
-                    src={match[2]}
+                    src={resolveImagePath(match[2])}
                     alt={match[1]}
                     className="mx-auto max-w-full rounded-lg"
                     style={{ display: "inline-block", margin: "12px 0" }}

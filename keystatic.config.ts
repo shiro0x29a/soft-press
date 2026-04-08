@@ -23,7 +23,7 @@ export default config({
           options: {
             image: {
               directory: (ctx) =>
-                `content/posts/${ctx.collection ?? ctx.slug}/images`,
+                `content/posts/${ctx.collection ?? ctx.slug}/content`,
             },
           },
         }),
