@@ -103,8 +103,8 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
         </Link>
 
         <article>
-          <header style={{ margin: "21px 21px 12px" }}>
-            <h1 className="text-[32px] font-bold leading-[34px]">
+          <header className="mb-8">
+            <h1 style={{ margin: "21px 21px 12px" }} className="text-[32px] font-bold leading-[34px]">
               {post.title}
             </h1>
             <div
@@ -119,21 +119,24 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
             >
               {post.author && <span>{post.author}</span>}
               {post.publishedAt && (
-                <>
-                  <span className="px-[7px] text-lg leading-none">·</span>
-                  <time dateTime={post.publishedAt}>
-                    {new Date(post.publishedAt).toLocaleDateString("en-US", {
-                      year: "numeric",
-                      month: "long",
-                      day: "numeric",
-                    })}
-                  </time>
-                </>
+                <time
+                  dateTime={post.publishedAt}
+                  style={{
+                    color: "#79828B",
+                  }}
+                  className="before:content-['·'] before:px-[7px] before:text-lg before:leading-none"
+                >
+                  {new Date(post.publishedAt).toLocaleDateString("en-US", {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                  })}
+                </time>
               )}
             </div>
           </header>
 
-          <div style={{ padding: "0 21px" }}>
+          <div className="prose prose-neutral dark:prose-invert max-w-none" style={{ padding: "0 21px" }}>
             {post.body.split("\n").map((line, i) => {
               if (line.startsWith("# ")) {
                 return (
@@ -165,60 +168,69 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
                 );
               }
 
-              // Handle inline images and text
+              // Split line into text-only paragraphs and standalone images
               const imgRegex = /!\[([^\]]*)\]\(([^)]+)\)/g;
-              const parts: React.ReactNode[] = [];
+              const elements: React.ReactNode[] = [];
               let lastIndex = 0;
               let match;
+              let tempText = "";
 
               while ((match = imgRegex.exec(line)) !== null) {
                 // Text before image
                 if (match.index > lastIndex) {
-                  parts.push(
-                    <span key={`t-${i}-${lastIndex}`}>
-                      {line.slice(lastIndex, match.index)}
-                    </span>
-                  );
+                  const textBefore = line.slice(lastIndex, match.index).trim();
+                  if (textBefore) {
+                    elements.push(
+                      <p
+                        key={`p-${i}-${lastIndex}`}
+                        style={{ margin: "0 21px 12px", wordWrap: "break-word" }}
+                      >
+                        {textBefore}
+                      </p>
+                    );
+                  }
                 }
-                // Image
-                parts.push(
+                // Image as standalone element
+                elements.push(
                   <img
                     key={`img-${i}-${match.index}`}
                     src={resolveImagePath(match[2])}
                     alt={match[1]}
                     className="mx-auto max-w-full rounded-lg"
-                    style={{ display: "inline-block", margin: "12px 0" }}
+                    style={{ display: "block", margin: "12px 0" }}
                   />
                 );
                 lastIndex = match.index + match[0].length;
               }
 
-              // Remaining text
+              // Remaining text after last image
               if (lastIndex < line.length) {
-                parts.push(
-                  <span key={`t-end-${i}`}>{line.slice(lastIndex)}</span>
-                );
+                const textAfter = line.slice(lastIndex).trim();
+                if (textAfter) {
+                  elements.push(
+                    <p
+                      key={`p-end-${i}`}
+                      style={{ margin: "0 21px 12px", wordWrap: "break-word" }}
+                    >
+                      {textAfter}
+                    </p>
+                  );
+                }
               }
 
-              if (parts.length === 0) {
+              // No images found, treat entire line as paragraph
+              if (elements.length === 0 && line.trim()) {
                 return (
                   <p
                     key={i}
                     style={{ margin: "0 21px 12px", wordWrap: "break-word" }}
                   >
-                    {line}
+                    {line.trim()}
                   </p>
                 );
               }
 
-              return (
-                <p
-                  key={i}
-                  style={{ margin: "0 21px 12px", wordWrap: "break-word" }}
-                >
-                  {parts}
-                </p>
-              );
+              return elements.length > 0 ? <>{elements}</> : null;
             })}
           </div>
         </article>
