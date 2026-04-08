@@ -154,26 +154,59 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
                   </li>
                 );
               }
-              if (line.startsWith("![")) {
-                const imgMatch = line.match(/!\[([^\]]*)\]\(([^)]+)\)/);
-                if (imgMatch) {
-                  return (
-                    <p key={i} style={{ margin: "0 21px 12px", textAlign: "center" }}>
-                      <img
-                        src={imgMatch[2]}
-                        alt={imgMatch[1]}
-                        className="mx-auto max-w-full rounded-lg"
-                      />
-                    </p>
+
+              // Handle inline images and text
+              const imgRegex = /!\[([^\]]*)\]\(([^)]+)\)/g;
+              const parts: React.ReactNode[] = [];
+              let lastIndex = 0;
+              let match;
+
+              while ((match = imgRegex.exec(line)) !== null) {
+                // Text before image
+                if (match.index > lastIndex) {
+                  parts.push(
+                    <span key={`t-${i}-${lastIndex}`}>
+                      {line.slice(lastIndex, match.index)}
+                    </span>
                   );
                 }
+                // Image
+                parts.push(
+                  <img
+                    key={`img-${i}-${match.index}`}
+                    src={match[2]}
+                    alt={match[1]}
+                    className="mx-auto max-w-full rounded-lg"
+                    style={{ display: "inline-block", margin: "12px 0" }}
+                  />
+                );
+                lastIndex = match.index + match[0].length;
               }
+
+              // Remaining text
+              if (lastIndex < line.length) {
+                parts.push(
+                  <span key={`t-end-${i}`}>{line.slice(lastIndex)}</span>
+                );
+              }
+
+              if (parts.length === 0) {
+                return (
+                  <p
+                    key={i}
+                    style={{ margin: "0 21px 12px", wordWrap: "break-word" }}
+                  >
+                    {line}
+                  </p>
+                );
+              }
+
               return (
                 <p
                   key={i}
                   style={{ margin: "0 21px 12px", wordWrap: "break-word" }}
                 >
-                  {line}
+                  {parts}
                 </p>
               );
             })}
